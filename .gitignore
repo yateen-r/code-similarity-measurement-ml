@@ -205,3 +205,31 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# =========================
+# Project-specific ignores
+# =========================
+
+# Virtual environment (your project uses this)
+code-venv/
+
+# Uploaded files & runtime media
+media/
+
+# Datasets (do not commit data)
+datasets/
+
+# Trained ML models / artifacts
+*.pkl
+*.joblib
+*.h5
+*.onnx
+
+# Model experiment outputs
+ml_models/*.pkl
+ml_models/*_scaler.*
+ml_models/*_model.*
+
+# OS junk
+.DS_Store
+Thumbs.db
