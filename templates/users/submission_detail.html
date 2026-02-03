@@ -1,0 +1,11 @@
+{% extends 'base/base.html' %}
+{% block title %}Submission Detail{% endblock %}
+{% block content %}
+<div class="container">
+  <h2>{{ submission.title }}</h2>
+  <p><strong>Language:</strong> {{ submission.language }}</p>
+  <p><strong>Status:</strong> {{ submission.status }}</p>
+  <pre class="code-block">{{ submission.code_text }}</pre>
+  <a href="{% url 'users:submissions' %}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}

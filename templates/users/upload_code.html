@@ -1,0 +1,114 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Upload Code{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="upload-card">
+                <div class="upload-header">
+                    <i class="fas fa-cloud-upload-alt fa-4x"></i>
+                    <h2>Upload Your Code</h2>
+                    <p>Submit code files or paste directly for similarity analysis</p>
+                </div>
+
+                <ul class="nav nav-tabs mb-4" id="uploadTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-upload" type="button">
+                            <i class="fas fa-file-upload"></i> Upload File
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-upload" type="button">
+                            <i class="fas fa-keyboard"></i> Paste Code
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- File Upload Tab -->
+                    <div class="tab-pane fade show active" id="file-upload" role="tabpanel">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-heading"></i> Title</label>
+                                <input type="text" name="title" class="form-control" placeholder="Enter descriptive title" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-align-left"></i> Description (Optional)</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Brief description of your code"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-code"></i> Programming Language</label>
+                                <select name="language" class="form-control" required>
+                                    <option value="">Select Language</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="c">C</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-file-code"></i> Code File</label>
+                                <div class="file-drop-zone" id="fileDropZone">
+                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                    <p>Drag & Drop your file here or click to browse</p>
+                                    <input type="file" name="code_file" id="codeFile" class="form-control" accept=".py,.java,.js,.cpp,.c,.txt" required>
+                                    <small class="text-muted">Supported: .py, .java, .js, .cpp, .c, .txt (Max 10MB)</small>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-upload"></i> Upload Code
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Text Upload Tab -->
+                    <div class="tab-pane fade" id="text-upload" role="tabpanel">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-heading"></i> Title</label>
+                                <input type="text" name="title" class="form-control" placeholder="Enter descriptive title" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-align-left"></i> Description (Optional)</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Brief description of your code"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-code"></i> Programming Language</label>
+                                <select name="language" class="form-control" required>
+                                    <option value="">Select Language</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="c">C</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-keyboard"></i> Paste Your Code</label>
+                                <textarea name="code_text" class="form-control code-editor" rows="20" placeholder="Paste your code here..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-save"></i> Submit Code
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

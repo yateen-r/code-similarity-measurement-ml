@@ -1,0 +1,230 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Code Similarity Detector{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">{{ total_users }}</h3>
+                        <p class="mb-0">Total Users</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-primary-dark">
+                <small>{{ active_users }} active this week</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">{{ total_submissions }}</h3>
+                        <p class="mb-0">Submissions</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-file-code fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-success-dark">
+                <a href="{% url 'admins:submissions' %}" class="text-white text-decoration-none">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">{{ total_comparisons }}</h3>
+                        <p class="mb-0">Comparisons</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-code-compare fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-info-dark">
+                <small>{{ completed_comparisons }} completed</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">{{ high_similarity }}</h3>
+                        <p class="mb-0">High Similarity</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-warning-dark">
+                <small>≥75% similarity detected</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Language Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="languageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Similarity Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="similarityChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-users"></i> Recent Users</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'admins:users' %}" class="btn btn-sm btn-success w-100">
+                    View All Users
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-code-compare"></i> Recent Comparisons</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comparison in recent_comparisons|slice:":5" %}
+                            <tr>
+                                <td>{{ comparison.user.username }}</td>
+                                <td>
+                                    <span class="badge bg-{{ comparison.status|yesno:'success,warning,danger' }}">
+                                        {{ comparison.status }}
+                                    </span>
+                                </td>
+                                <td>{{ comparison.created_at|date:"M d" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'admins:comparisons' %}" class="btn btn-sm btn-warning w-100">
+                    View All Comparisons
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Language Distribution Chart
+const languageCtx = document.getElementById('languageChart').getContext('2d');
+new Chart(languageCtx, {
+    type: 'pie',
+    data: {
+        labels: [{% for stat in language_stats %}'{{ stat.language }}',{% endfor %}],
+        datasets: [{
+            data: [{% for stat in language_stats %}{{ stat.count }},{% endfor %}],
+            backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8']
+        }]
+    }
+});
+
+// Similarity Distribution Chart
+const similarityCtx = document.getElementById('similarityChart').getContext('2d');
+new Chart(similarityCtx, {
+    type: 'bar',
+    data: {
+        labels: ['High (≥75%)', 'Medium (50-74%)', 'Low (<50%)'],
+        datasets: [{
+            label: 'Number of Comparisons',
+            data: [{{ high_similarity }}, {{ medium_similarity }}, {{ low_similarity }}],
+            backgroundColor: ['#dc3545', '#ffc107', '#28a745']
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

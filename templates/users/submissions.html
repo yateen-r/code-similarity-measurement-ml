@@ -1,0 +1,24 @@
+{% extends 'base/base.html' %}
+{% block title %}My Submissions{% endblock %}
+{% block content %}
+<div class="container">
+  <h2>My Submissions</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr><th>Title</th><th>Language</th><th>Status</th><th>Uploaded</th></tr>
+    </thead>
+    <tbody>
+      {% for s in submissions %}
+      <tr>
+        <td><a href="{% url 'users:submission_detail' s.submission_id %}">{{ s.title }}</a></td>
+        <td>{{ s.language }}</td>
+        <td>{{ s.status }}</td>
+        <td>{{ s.created_at|date:"M d, Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No submissions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

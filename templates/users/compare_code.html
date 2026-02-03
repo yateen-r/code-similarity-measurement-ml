@@ -1,0 +1,108 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Compare Code{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="compare-card">
+                <div class="compare-header">
+                    <i class="fas fa-code-branch fa-4x"></i>
+                    <h2>Compare Code Files</h2>
+                    <p>Select files to analyze similarity and detect potential plagiarism</p>
+                </div>
+
+                <form method="post" class="compare-form">
+                    {% csrf_token %}
+                    
+                    <div class="comparison-type-selector mb-4">
+                        <label class="form-label"><i class="fas fa-sliders-h"></i> Comparison Type</label>
+                        <select name="comparison_type" class="form-control" required>
+                            <option value="file_vs_file">File vs File</option>
+                            <option value="single_vs_repo">Single File vs Repository</option>
+                            <option value="multiple_vs_multiple">Multiple Files vs Multiple Files</option>
+                            <option value="text_vs_text">Text vs Text</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="source-selector">
+                                <label class="form-label"><i class="fas fa-file-code"></i> Source Code</label>
+                                <select name="source_submission" class="form-control submission-select" required>
+                                    <option value="">Select source file...</option>
+                                    {% for submission in submissions %}
+                                        <option value="{{ submission.submission_id }}">
+                                            {{ submission.title }} ({{ submission.get_language_display }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="submission-preview mt-3" id="sourcePreview">
+                                    <p class="text-muted text-center">Select a file to preview</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="target-selector">
+                                <label class="form-label"><i class="fas fa-file-code"></i> Target Code</label>
+                                <select name="target_submission" class="form-control submission-select" required>
+                                    <option value="">Select target file...</option>
+                                    {% for submission in submissions %}
+                                        <option value="{{ submission.submission_id }}">
+                                            {{ submission.title }} ({{ submission.get_language_display }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="submission-preview mt-3" id="targetPreview">
+                                    <p class="text-muted text-center">Select a file to preview</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="advanced-options mt-4">
+                        <h5><i class="fas fa-cog"></i> Advanced Options</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Similarity Threshold</label>
+                                <div class="input-group">
+                                    <input type="range" name="similarity_threshold" class="form-range" min="0" max="1" step="0.05" value="0.75" id="thresholdRange">
+                                    <span class="threshold-value" id="thresholdValue">75%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" name="use_ml_analysis" id="mlAnalysis" checked>
+                                    <label class="form-check-label" for="mlAnalysis">
+                                        <i class="fas fa-brain"></i> Use ML-Based Analysis
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-actions mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-search"></i> Start Comparison
+                        </button>
+                        <a href="{% url 'users:comparisons' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-list"></i> View History
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('thresholdRange').addEventListener('input', function() {
+    document.getElementById('thresholdValue').textContent = Math.round(this.value * 100) + '%';
+});
+</script>
+{% endblock %}

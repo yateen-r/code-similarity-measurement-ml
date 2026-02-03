@@ -1,0 +1,14 @@
+{% extends 'base/base.html' %}
+{% block title %}History{% endblock %}
+{% block content %}
+<div class="container">
+  <h2>History</h2>
+  <ul>
+    {% for c in comparisons %}
+      <li>{{ c.request_id }} - {{ c.status }} - {{ c.created_at|date:"M d, Y" }}</li>
+    {% empty %}
+      <li>No history available.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

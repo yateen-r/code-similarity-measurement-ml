@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="page-title"><i class="fas fa-user"></i> Profile</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="card-body">
+                    <h5>Account</h5>
+                    <p><strong>Username:</strong> {{ request.user.username }}</p>
+                    <p><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p><strong>Joined:</strong> {{ request.user.date_joined|date:'M d, Y' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="card-body">
+                    <h5>Statistics</h5>
+                    <p><strong>Total submissions:</strong> {{ stats.total_submissions }}</p>
+                    <p><strong>Total comparisons:</strong> {{ stats.total_comparisons }}</p>
+                    <p><strong>Completed comparisons:</strong> {{ stats.completed_comparisons }}</p>
+                    <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary mt-3">Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

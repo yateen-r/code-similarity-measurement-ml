@@ -1,0 +1,55 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Register - Code Similarity Detector{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fas fa-user-plus fa-3x mb-3"></i>
+            <h2>Create Account</h2>
+            <p>Join Code Similarity Detector today</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-user"></i> Username</label>
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                {{ form.email }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-phone"></i> Phone (Optional)</label>
+                {{ form.phone }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                {{ form.password1 }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-gradient">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </form>
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

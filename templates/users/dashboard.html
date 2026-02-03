@@ -1,0 +1,170 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card stat-card-blue">
+                <div class="stat-icon"><i class="fas fa-file-code"></i></div>
+                <div class="stat-content">
+                    <h3>{{ total_submissions }}</h3>
+                    <p>Total Submissions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-green">
+                <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="stat-content">
+                    <h3>{{ total_comparisons }}</h3>
+                    <p>Total Comparisons</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-purple">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-content">
+                    <h3>{{ completed_comparisons }}</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-orange">
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-content">
+                    <h3>{{ high_similarity|length }}</h3>
+                    <p>High Similarity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history"></i> Recent Submissions</h5>
+                    <a href="{% url 'users:submissions' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_submissions %}
+                        <div class="list-group">
+                            {% for submission in recent_submissions %}
+                                <a href="{% url 'users:submission_detail' submission.submission_id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ submission.title }}</h6>
+                                            <small class="text-muted">
+                                                <span class="badge bg-info">{{ submission.get_language_display }}</span>
+                                                {{ submission.created_at|date:"M d, Y H:i" }}
+                                            </small>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-muted"></i>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i><br>
+                            No submissions yet. <a href="{% url 'users:upload_code' %}">Upload your first code</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> Recent Comparisons</h5>
+                    <a href="{% url 'users:comparisons' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_comparisons %}
+                        <div class="list-group">
+                            {% for comparison in recent_comparisons %}
+                                <a href="{% url 'users:comparison_detail' comparison.request_id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ comparison.source_submission.title }} vs {{ comparison.target_submission.title }}</h6>
+                                            <small class="text-muted">
+                                                <span class="badge bg-{{ comparison.status|yesno:'success,warning,danger' }}">{{ comparison.get_status_display }}</span>
+                                                {{ comparison.created_at|date:"M d, Y H:i" }}
+                                            </small>
+                                        </div>
+                                        {% if comparison.status == 'completed' %}
+                                            <span class="badge bg-primary">{{ comparison.result.overall_similarity_score|floatformat:2 }}%</span>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i><br>
+                            No comparisons yet. <a href="{% url 'users:compare_code' %}">Start comparing</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if high_similarity %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-exclamation-triangle text-warning"></i> High Similarity Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Target</th>
+                                    <th>Similarity Score</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in high_similarity %}
+                                    <tr>
+                                        <td>{{ result.comparison.source_submission.title }}</td>
+                                        <td>{{ result.comparison.target_submission.title }}</td>
+                                        <td>
+                                            <span class="badge bg-danger">{{ result.overall_similarity_score|floatformat:2 }}%</span>
+                                        </td>
+                                        <td>{{ result.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'users:comparison_detail' result.comparison.request_id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
